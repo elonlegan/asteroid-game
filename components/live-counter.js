@@ -6,19 +6,19 @@ export class LiveCounter {
 
   create() {
     let displacement = 60;
-    let firstPosition = 800 - ((this.initialLives - 1) * displacement);
+    let firstPosition = 1000 - (this.initialLives - 1) * displacement;
     this.liveImages = this.relatedScene.physics.add.staticGroup({
       setScale: { x: 0.5, y: 0.5 },
-      key: 'platform',
-      frameQuantity: this.initialLives-1,
+      key: "platform",
+      frameQuantity: this.initialLives - 1,
       gridAlign: {
         width: this.initialLives - 1,
         height: 1,
         cellWidth: displacement,
         cellHeight: 30,
         x: firstPosition,
-        y: 30
-      }
+        y: 30,
+      },
     });
   }
 
