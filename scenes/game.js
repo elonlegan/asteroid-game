@@ -12,20 +12,23 @@ export class Game extends Phaser.Scene {
 
   preload() {
     this.load.image("platform", "https://i.postimg.cc/QCgfMjq6/plane-2.png");
-    this.load.image(
-      "background",
-      "https://i.postimg.cc/xTYs4b0B/parallax-mountain-bg.png"
-    );
+
+    this.load.svg("background", "../images/japon.svg", {
+      width: 1000,
+      height: 700,
+    });
 
     this.load.audio("gameoversample", "sounds/gameover.ogg");
     this.load.audio("startgamesample", "sounds/start-game.ogg");
     this.load.audio("livelostsample", "sounds/live-lost.ogg");
+    this.objects = {};
   }
 
   create() {
     this.physics.world.setBoundsCollision(true, true, true, false);
-
-    this.add.image(500, 250, "background");
+    this.objects.camera = this.cameras.add(0, 0, 1000, 500);
+    this.objects.camera.setBackgroundColor("#5aa7dc");
+    this.background = this.add.image(500, 324, "background");
 
     this.liveCounter.create();
 
