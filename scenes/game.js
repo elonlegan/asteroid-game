@@ -194,5 +194,18 @@ export class Game extends Phaser.Scene {
 		if (!gameNotFinished) {
 			this.setInitialPlatformState();
 		}
+
+		var particles = this.add.particles('asteroid');
+
+		var emitter = particles.createEmitter();
+
+		emitter.setPosition(ast.x, ast.y);
+		emitter.setSpeed(100, 250);
+		emitter.setLifespan(1000);
+		emitter.setScale(0.1);
+		emitter.setBlendMode('normal');
+		setTimeout(function () {
+			emitter.stop();
+		}, 200);
 	}
 }
