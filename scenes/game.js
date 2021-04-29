@@ -8,10 +8,15 @@ export class Game extends Phaser.Scene {
   init() {
     this.score = 0;
     this.liveCounter = new LiveCounter(this, 3);
+    this.spawnasteroidtimeout;
   }
 
   preload() {
     this.load.image("platform", "https://i.postimg.cc/QCgfMjq6/plane-2.png");
+    this.load.image(
+      "asteroid",
+      "https://i.postimg.cc/Dw0BJB9F/Asteroids-1.png"
+    );
 
     this.load.svg("background", "../images/japon.svg", {
       width: 1000,
@@ -46,6 +51,22 @@ export class Game extends Phaser.Scene {
       fill: "#fff",
       fontFamily: "verdana, arial, sans-serif",
     });
+
+    this.largeast = this.physics.add.group(
+      {
+        immovable: true,
+        allowGravity: false,
+      },
+      "asteroid"
+    );
+    this.physics.add.collider(
+      this.platform,
+      this.largeast,
+      this.playerhit,
+      null,
+      this
+    );
+    setTimeout(this.spawnasteroid.bind(this), 1000);
 
     this.platformImpactSample = this.sound.add("platformimpactsample");
     this.brickImpactSample = this.sound.add("brickimpactsample");
@@ -97,5 +118,24 @@ export class Game extends Phaser.Scene {
     this.liveLostSample.play();
     this.platform.x = 60;
     this.platform.y = 250;
+  }
+
+  spawnasteroid() {
+    this.ast = this.largeast.create(
+      1000,
+      Phaser.Math.Between(0, 500),
+      "asteroid"
+    );
+    this.ast.body.velocity.x = -500;
+    this.spawnasteroidtimeout = setTimeout(this.spawnasteroid.bind(this), 3000);
+  }
+
+  playerhit(player, ast) {
+    ast.destroy();
+    let gameNotFinished = this.liveCounter.liveLost();
+    if (!gameNotFinished) {
+      this.setInitialPlatformState();
+    }
+    clearTimeout(this.spawnasteroidtimeout);
   }
 }
