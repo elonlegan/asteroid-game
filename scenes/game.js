@@ -201,7 +201,7 @@ export class Game extends Phaser.Scene {
 
 		emitter.setPosition(ast.x, ast.y);
 		emitter.setSpeed(100, 250);
-		emitter.setLifespan(1000);
+		emitter.setLifespan(2000);
 		emitter.setScale(0.1);
 		emitter.setBlendMode('normal');
 		setTimeout(function () {
