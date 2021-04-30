@@ -12,6 +12,9 @@ export class Game extends Phaser.Scene {
 		this.beforeAsteroidPosition;
 		this.cam = this.cameras.main;
 		this.level = 1;
+
+		this.bulletdelay = 200;
+		this.shootable = 1;
 	}
 
 	preload() {
@@ -41,6 +44,8 @@ export class Game extends Phaser.Scene {
 			'https://i.postimg.cc/Dw0BJB9F/Asteroids-1.png'
 		);
 
+		this.load.image('laser', 'https://i.postimg.cc/dQp78ZCw/laser-Blue02.png');
+
 		this.load.audio('gameoversample', 'sounds/gameover.ogg');
 		this.load.audio('startgamesample', 'sounds/start-game.ogg');
 		this.load.audio('livelostsample', 'sounds/live-lost.ogg');
@@ -62,9 +67,10 @@ export class Game extends Phaser.Scene {
 		});
 		this.numberBackground = 0;
 		this.currentBackground = this.backgroundArray[0];
+		this.cam.setBackgroundColor('#5aa7dc');
 
 		this.physics.world.setBoundsCollision(true, true, true, false);
-		this.cam.setBackgroundColor('#5aa7dc');
+
 		this.liveCounter.create();
 
 		this.platform = this.physics.add.image(60, 250, 'platform');
@@ -75,6 +81,9 @@ export class Game extends Phaser.Scene {
 		this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 		this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 		this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+		this.spaceBar = this.input.keyboard.addKey(
+			Phaser.Input.Keyboard.KeyCodes.SPACE
+		);
 
 		this.scoreText = this.add.text(16, 16, 'PUNTOS: 0', {
 			fontSize: '20px',
@@ -89,6 +98,14 @@ export class Game extends Phaser.Scene {
 			},
 			'asteroid'
 		);
+		this.bullets = this.physics.add.group(
+			{
+				immovable: true,
+				allowGravity: false,
+			},
+			'laser'
+		);
+
 		this.physics.add.collider(
 			this.platform,
 			this.largeast,
@@ -96,6 +113,15 @@ export class Game extends Phaser.Scene {
 			null,
 			this
 		);
+
+		this.physics.add.collider(
+			this.bullets,
+			this.largeast,
+			this.hitasteroid,
+			null,
+			this
+		);
+
 		setTimeout(this.spawnasteroid.bind(this), 1000);
 
 		this.platformImpactSample = this.sound.add('platformimpactsample');
@@ -108,6 +134,29 @@ export class Game extends Phaser.Scene {
 
 	update(time) {
 		this.increasePoints(time);
+		//taking bullet input and shooting
+		if (this.spaceBar.isDown && this.shootable) {
+			this.bul = this.bullets
+				.create(this.platform.x + 40, this.platform.y - 10, 'laser')
+				.setScale(0.6);
+			this.bul.angle = 90;
+			this.bul.body.velocity.x = Math.sin((Math.PI / 180) * 90) * 1000;
+			this.bul.setVisible(false);
+			setTimeout(
+				function () {
+					this.bul.setVisible(true);
+				}.bind(this),
+				10
+			);
+			this.shootable = 0;
+
+			setTimeout(
+				function () {
+					this.shootable = 1;
+				}.bind(this),
+				this.bulletdelay
+			);
+		}
 
 		if (this.cursors.up.isDown || this.keyW.isDown) {
 			this.platform.setVelocityY(-500);
@@ -207,5 +256,47 @@ export class Game extends Phaser.Scene {
 		setTimeout(function () {
 			emitter.stop();
 		}, 200);
+	}
+
+	hitasteroid(bullet, aster) {
+		aster.anims.accumulator += 1;
+		if (aster.anims.accumulator > 3) {
+			aster.destroy();
+			this.liveLostSample.play();
+
+			//add score
+			this.score += 100;
+			this.scoreText.setText('PUNTOS: ' + this.score);
+
+			//emit particles where asteroid is distroyed
+			var particles = this.add.particles('asteroid');
+
+			var emitter = particles.createEmitter();
+
+			emitter.setPosition(bullet.x, bullet.y);
+			emitter.setSpeed(100, 250);
+			emitter.setLifespan(2000);
+			emitter.setScale(0.1);
+			emitter.setBlendMode('normal');
+			setTimeout(function () {
+				emitter.stop();
+			}, 200);
+		} else {
+			//emit particles where bullet hits
+			var particles = this.add.particles('asteroid');
+
+			var emitter = particles.createEmitter();
+
+			emitter.setPosition(bullet.x, bullet.y);
+			emitter.setSpeed(200, 350);
+			emitter.setLifespan(100);
+			emitter.setScale(0.1);
+			emitter.setBlendMode('normal');
+			setTimeout(function () {
+				emitter.stop();
+			}, 200);
+		}
+
+		bullet.destroy();
 	}
 }
