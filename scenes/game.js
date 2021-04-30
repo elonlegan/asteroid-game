@@ -265,7 +265,7 @@ export class Game extends Phaser.Scene {
 
 	hitasteroid(bullet, aster) {
 		aster.anims.accumulator += 1;
-		if (aster.anims.accumulator > 3) {
+		if (aster.anims.accumulator > 2) {
 			aster.destroy();
 			this.brakeAsteroidSample.play();
 
