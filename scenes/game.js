@@ -49,6 +49,9 @@ export class Game extends Phaser.Scene {
 		this.load.audio('gameoversample', 'sounds/gameover.ogg');
 		this.load.audio('startgamesample', 'sounds/start-game.ogg');
 		this.load.audio('livelostsample', 'sounds/live-lost.ogg');
+		this.load.audio('changeTab', 'sounds/change-tab.ogg');
+		this.load.audio('breakAsteroid', 'sounds/break-asteroid.wav');
+		this.load.audio('shoot', 'sounds/shoot.wav');
 		this.objects = {};
 	}
 
@@ -124,12 +127,11 @@ export class Game extends Phaser.Scene {
 
 		setTimeout(this.spawnasteroid.bind(this), 1000);
 
-		this.platformImpactSample = this.sound.add('platformimpactsample');
-		this.brickImpactSample = this.sound.add('brickimpactsample');
 		this.gameOverSample = this.sound.add('gameoversample');
-		this.winSample = this.sound.add('winsample');
-		this.startGameSample = this.sound.add('startgamesample');
 		this.liveLostSample = this.sound.add('livelostsample');
+		this.shootSample = this.sound.add('shoot');
+		this.changeTabSample = this.sound.add('changeTab', { volume: 0.1 });
+		this.brakeAsteroidSample = this.sound.add('breakAsteroid');
 	}
 
 	update(time) {
@@ -149,6 +151,7 @@ export class Game extends Phaser.Scene {
 				10
 			);
 			this.shootable = 0;
+			this.shootSample.play();
 
 			setTimeout(
 				function () {
@@ -159,9 +162,11 @@ export class Game extends Phaser.Scene {
 		}
 
 		if (this.cursors.up.isDown || this.keyW.isDown) {
+			this.changeTabSample.play();
 			this.platform.setVelocityY(-500);
 		} else if (this.cursors.down.isDown || this.keyS.isDown) {
 			this.platform.setVelocityY(500);
+			this.changeTabSample.play();
 		} else if (this.cursors.left.isDown || this.keyA.isDown) {
 			this.platform.setVelocityX(-500);
 			this.platform.setVelocityY(0);
@@ -262,7 +267,7 @@ export class Game extends Phaser.Scene {
 		aster.anims.accumulator += 1;
 		if (aster.anims.accumulator > 3) {
 			aster.destroy();
-			this.liveLostSample.play();
+			this.brakeAsteroidSample.play();
 
 			//add score
 			this.score += 100;
