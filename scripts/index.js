@@ -1,3 +1,4 @@
+import { Start } from '../scenes/start.js';
 import { Game } from '../scenes/game.js';
 import { Gameover } from '../scenes/gameover.js';
 
@@ -6,7 +7,7 @@ const config = {
 	width: 1000,
 	height: 500,
 	parent: 'container--game',
-	scene: [Game, Gameover],
+	scene: [Start, Game, Gameover],
 	physics: {
 		default: 'arcade',
 		arcade: {

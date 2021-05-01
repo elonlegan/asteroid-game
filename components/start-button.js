@@ -1,12 +1,12 @@
-export class RestartButton {
+export class StartButton {
 	constructor(scene) {
 		this.relatedScene = scene;
 	}
 
 	preload() {
 		this.relatedScene.load.spritesheet(
-			'restartButton',
-			'https://i.postimg.cc/yN3GCv4m/game-buttons.png',
+			'startButton',
+			'https://i.postimg.cc/bvMjQZ8T/start-button.png',
 			{
 				frameWidth: 264,
 				frameHeight: 73,
@@ -16,7 +16,7 @@ export class RestartButton {
 
 	create() {
 		this.startButton = this.relatedScene.add
-			.sprite(500, 250, 'restartButton')
+			.sprite(500, 250, 'startButton')
 			.setInteractive();
 
 		this.startButton.on('pointerover', () => {
